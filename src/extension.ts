@@ -31,8 +31,10 @@ export async function activate(context: vscode.ExtensionContext) {
 	);
 	testStatusBarItem.text = 'Loading...';
 
-	const fileChangeEvent =
-		vscode.workspace.onDidOpenTextDocument(updateStatusBar);
+	// Figure out the right event so it's not just when you open a new, unopened file
+	const fileChangeEvent = vscode.window.onDidChangeActiveTextEditor(e =>
+		updateStatusBar(e?.document)
+	);
 
 	const fileSaveEvent =
 		vscode.workspace.onDidSaveTextDocument(updateStatusBar);
@@ -60,27 +62,35 @@ export async function activate(context: vscode.ExtensionContext) {
 	testStatusBarItem.hide();
 }
 
-async function updateStatusBar(e: vscode.TextDocument) {
+async function updateStatusBar(e: vscode.TextDocument | undefined) {
 	try {
-		testStatusBarItem.show();
+		if (e === undefined) return;
 
 		const currentFileSize = await getFileSize(e);
 		const currentFolderSize = await getFolderSize();
 
-		if (!currentFileSize) {
-			testStatusBarItem.text = `$(file) ${currentFileSize}`;
-			return;
-		}
+		if (currentFileSize === undefined) return;
+		if (!currentFileSize)
+			return (testStatusBarItem.text = `$(file) ${currentFileSize}`);
+
 		testStatusBarItem.text = `$(file) ${currentFileSize} | $(file-directory) ${
 			currentFolderSize || '0'
 		}`;
+
+		testStatusBarItem.show();
 	} catch (e) {
 		console.error(e);
 	}
 }
 
-async function getFileSize(e: vscode.TextDocument): Promise<string> {
-	return filesize((await vscode.workspace.fs.stat(e.uri)).size);
+async function getFileSize(
+	e: vscode.TextDocument
+): Promise<string | undefined> {
+	if (!e.uri.fsPath.endsWith('.git')) {
+		return filesize((await vscode.workspace.fs.stat(e.uri)).size);
+	} else {
+		return undefined;
+	}
 }
 
 async function getFolderSize(): Promise<string | undefined> {
