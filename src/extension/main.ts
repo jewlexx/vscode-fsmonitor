@@ -7,33 +7,39 @@ export default class Extension {
 	configuration: vscode.WorkspaceConfiguration;
 
 	constructor(public context: vscode.ExtensionContext) {
+		// Bindings so anything done in the following functions is done in the context of the extension
 		this.updateStatusBar = this.updateStatusBar.bind(this);
 		this.getFileSize = this.getFileSize.bind(this);
 		this.getFolderSize = this.getFolderSize.bind(this);
 		this.getWorkspaceSize = this.getWorkspaceSize.bind(this);
 		this.updateConfiguration = this.updateConfiguration.bind(this);
 
+		// Sets the configuration to the users configuration
 		this.configuration = vscode.workspace.getConfiguration('fsMonitor');
 
+		// Checks what alignment the user wants the status bar to be in
 		const alignmentConfig =
 			this.configuration.get<'left' | 'right'>('position') || 'left';
 
 		const alignment = alignmentConfig === 'right' ? 'Right' : 'Left';
 
+		// Creates the status bar item and uses the values from config
 		this.fileSizeItem = vscode.window.createStatusBarItem(
 			vscode.StatusBarAlignment[alignment],
-			100
+			this.configuration.get<number>('priority')
 		);
 
-		vscode.workspace.onDidChangeConfiguration(this.updateConfiguration);
-
-		context.subscriptions.push(
+		// Event listeners
+		const events = [
+			vscode.workspace.onDidChangeConfiguration(this.updateConfiguration),
 			vscode.window.onDidChangeActiveTextEditor(this.updateStatusBar),
 			vscode.workspace.onDidSaveTextDocument(this.updateStatusBar),
-			this.fileSizeItem
-		);
+		];
+
+		context.subscriptions.push(...events, this.fileSizeItem);
 		this.fileSizeItem.hide();
 
+		// Initializes the status bar
 		this.updateStatusBar();
 
 		console.log('Folder Size Monitor was successfully activated!');
