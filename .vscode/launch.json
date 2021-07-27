@@ -9,6 +9,14 @@
 			"name": "Run Extension",
 			"type": "extensionHost",
 			"request": "launch",
+			"args": ["--extensionDevelopmentPath=${workspaceFolder}"],
+			"outFiles": ["${workspaceFolder}/dist/**/*.js"],
+			"preLaunchTask": "${defaultBuildTask}"
+		},
+		{
+			"name": "Clean Run Extension",
+			"type": "extensionHost",
+			"request": "launch",
 			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}",
 				// The following two lines simply run vscode in a clean instance, they do not work to set custom data
