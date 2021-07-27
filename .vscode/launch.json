@@ -9,7 +9,12 @@
 			"name": "Run Extension",
 			"type": "extensionHost",
 			"request": "launch",
-			"args": ["--extensionDevelopmentPath=${workspaceFolder}"],
+			"args": [
+				"--extensionDevelopmentPath=${workspaceFolder}",
+				"--extensions-dir=${workspaceFolder}/tmp/ext",
+				"--user-data-dir=${workspaceFolder}/tmp/data"
+				// "${workspaceFolder}/testProject"
+			],
 			"outFiles": ["${workspaceFolder}/dist/**/*.js"],
 			"preLaunchTask": "${defaultBuildTask}"
 		},
