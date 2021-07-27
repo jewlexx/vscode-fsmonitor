@@ -23,12 +23,10 @@ export async function activate(context: vscode.ExtensionContext) {
 		vscode.StatusBarAlignment.Left,
 		100
 	);
-	testStatusBarItem.text = 'Loading...';
 
 	// Figure out the right event so it's not just when you open a new, unopened file
-	const fileChangeEvent = vscode.window.onDidChangeActiveTextEditor(e =>
-		updateStatusBar(e?.document)
-	);
+	const fileChangeEvent =
+		vscode.window.onDidChangeActiveTextEditor(updateStatusBar);
 
 	const fileSaveEvent =
 		vscode.workspace.onDidSaveTextDocument(updateStatusBar);
@@ -40,39 +38,48 @@ export async function activate(context: vscode.ExtensionContext) {
 	);
 	testStatusBarItem.hide();
 
-	updateStatusBar(vscode.window.activeTextEditor?.document);
+	updateStatusBar();
 
 	// Use the console to output diagnostic information (console.log) and errors (console.error)
 	// This line of code will only be executed once when your extension is activated
 	console.log('Folder Size Monitor was successfully activated!');
 }
 
-async function updateStatusBar(e: vscode.TextDocument | undefined) {
-	try {
-		if (e === undefined) return testStatusBarItem.hide();
+async function updateStatusBar() {
+	const currentFileSize = await getFileSize();
+	const currentFolderSize = await getFolderSize();
 
-		const currentFileSize = await getFileSize(e);
-		const currentFolderSize = await getFolderSize();
+	console.log(currentFolderSize || 'Folder is undefined');
+	console.log(currentFileSize || 'File is undefined');
 
-		if (currentFileSize === undefined) return;
-		if (!currentFileSize)
-			return (testStatusBarItem.text = `$(file) ${currentFileSize}`);
-
+	if (currentFileSize === undefined && currentFolderSize === undefined) {
+		console.log('Both are undefined');
+		return testStatusBarItem.hide();
+	} else if (
+		currentFolderSize === undefined &&
+		currentFileSize !== undefined
+	) {
+		testStatusBarItem.text = `$(file) ${currentFileSize}`;
+	} else if (
+		currentFileSize === undefined &&
+		currentFolderSize !== undefined
+	) {
+		testStatusBarItem.text = `$(file-directory) ${currentFolderSize}`;
+	} else {
 		testStatusBarItem.text = `$(file) ${currentFileSize} | $(file-directory) ${
 			currentFolderSize || '0'
 		}`;
-
-		testStatusBarItem.show();
-	} catch (e) {
-		console.error(e);
 	}
+
+	testStatusBarItem.show();
 }
 
-async function getFileSize(
-	e: vscode.TextDocument
-): Promise<string | undefined> {
-	if (!e.uri.fsPath.endsWith('.git')) {
-		return filesize((await vscode.workspace.fs.stat(e.uri)).size);
+async function getFileSize(): Promise<string | undefined> {
+	const currentFile = vscode.window.activeTextEditor?.document;
+	if (currentFile === undefined) {
+		return undefined;
+	} else if (!currentFile.uri.fsPath.endsWith('.git')) {
+		return filesize((await vscode.workspace.fs.stat(currentFile.uri)).size);
 	} else {
 		return undefined;
 	}
@@ -82,17 +89,20 @@ async function getFolderSize(): Promise<string | undefined> {
 	if (vscode.workspace.workspaceFolders === undefined) {
 		return undefined;
 	} else if (vscode.workspace.workspaceFolders.length !== 1) {
-		let totalSize = 0;
-
-		for (const folder of vscode.workspace.workspaceFolders) {
-			totalSize += (await ffs(folder.uri.fsPath)).size;
-		}
+		const totalSize = await vscode.workspace.workspaceFolders.reduce(
+			async (prev, folder) =>
+				(await prev) + (await ffs(folder.uri.fsPath)).size,
+			Promise.resolve(0)
+		);
 
 		return filesize(totalSize);
 	} else {
+		console.log(vscode.workspace.workspaceFolders[0].uri.fsPath);
 		const folderSize = (
 			await ffs(vscode.workspace.workspaceFolders[0].uri.fsPath)
 		).size;
+
+		console.log(filesize(folderSize));
 
 		return filesize(folderSize);
 	}
