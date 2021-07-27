@@ -8,6 +8,7 @@ export default class Extension {
 		this.updateStatusBar = this.updateStatusBar.bind(this);
 		this.getFileSize = this.getFileSize.bind(this);
 		this.getFolderSize = this.getFolderSize.bind(this);
+		this.getWorkspaceSize = this.getWorkspaceSize.bind(this);
 
 		this.fileSizeItem = vscode.window.createStatusBarItem(
 			vscode.StatusBarAlignment.Left,
@@ -28,7 +29,7 @@ export default class Extension {
 
 	async updateStatusBar() {
 		const currentFileSize = await this.getFileSize();
-		const currentFolderSize = await this.getFolderSize();
+		const currentFolderSize = await this.getWorkspaceSize();
 
 		console.log(currentFolderSize || 'Folder is undefined');
 		console.log(currentFileSize || 'File is undefined');
@@ -68,26 +69,38 @@ export default class Extension {
 		}
 	}
 
-	async getFolderSize(): Promise<string | undefined> {
+	async getWorkspaceSize(): Promise<string | undefined> {
 		if (vscode.workspace.workspaceFolders === undefined) {
 			return undefined;
 		} else if (vscode.workspace.workspaceFolders.length !== 1) {
 			const totalSize = await vscode.workspace.workspaceFolders.reduce(
 				async (prev, folder) =>
-					(await prev) + (await ffs(folder.uri.fsPath)).size,
+					(await prev) + (await this.getFolderSize(folder.uri)),
 				Promise.resolve(0)
 			);
 
 			return filesize(totalSize);
 		} else {
 			console.log(vscode.workspace.workspaceFolders[0].uri.fsPath);
-			const folderSize = (
-				await ffs(vscode.workspace.workspaceFolders[0].uri.fsPath)
-			).size;
+			const folderSize = await this.getFolderSize(
+				vscode.workspace.workspaceFolders[0].uri
+			);
 
 			console.log(filesize(folderSize));
 
 			return filesize(folderSize);
 		}
+	}
+
+	async getFolderSize(uri: vscode.Uri) {
+		const ignoreNodeModules = vscode.workspace
+			.getConfiguration('foldersizemonitor')
+			.get<boolean>('ignoreNodeModules');
+
+		const ffsConfig: ffs.Options | undefined = ignoreNodeModules
+			? { ignore: /node_modules/g }
+			: undefined;
+
+		return ffs.loose(uri.fsPath, ffsConfig);
 	}
 }

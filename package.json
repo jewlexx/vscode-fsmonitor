@@ -13,6 +13,18 @@
 	"activationEvents": [
 		"onStartupFinished"
 	],
+	"contributes": {
+		"configuration": {
+			"title": "Folder Size Monitor",
+			"properties": {
+				"foldersizemonitor.ignoreNodeModules": {
+					"type": "boolean",
+					"default": false,
+					"description": "Ignore the node_modules folder from the total folder size"
+				}
+			}
+		}
+	},
 	"main": "./dist/extension.js",
 	"scripts": {
 		"vscode:prepublish": "yarn run package",
