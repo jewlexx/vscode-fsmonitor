@@ -11,8 +11,8 @@
 			"request": "launch",
 			"args": [
 				"--extensionDevelopmentPath=${workspaceFolder}",
-				"--extensions-dir=${workspaceFolder}/tmp/ext",
-				"--user-data-dir=${workspaceFolder}/tmp/data"
+				"--extensions-dir=${workspaceFolder}/tmp/ext", // Doesn't work
+				"--user-data-dir=${workspaceFolder}/tmp/data" // Doesn't work
 				// "${workspaceFolder}/testProject"
 			],
 			"outFiles": ["${workspaceFolder}/dist/**/*.js"],
