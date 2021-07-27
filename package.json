@@ -37,7 +37,7 @@
 				"fsMonitor.priority": {
 					"type": "number",
 					"default": 100,
-					"markdownDescription": "Change the priority of the sizes on the status bar *higher is closer to your chosen side*"
+					"markdownDescription": "Change the priority on the status bar *higher is always closer to the left*"
 				}
 			}
 		}

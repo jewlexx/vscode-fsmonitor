@@ -58,6 +58,8 @@ export default class Extension {
 			vscode.StatusBarAlignment[alignment],
 			this.configuration.get<number>('priority')
 		);
+
+		return this.updateStatusBar();
 	}
 
 	async updateStatusBar() {
