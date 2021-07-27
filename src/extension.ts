@@ -3,11 +3,10 @@
 import vscode from 'vscode';
 import Extension from './extension/main';
 
+let fsMonService: Extension;
+
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
-	new Extension(context);
+	fsMonService = new Extension(context);
 }
-
-// this method is called when your extension is deactivated
-export function deactivate() {}

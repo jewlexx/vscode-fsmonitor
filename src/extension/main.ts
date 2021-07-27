@@ -4,16 +4,28 @@ import filesize from 'filesize';
 
 export default class Extension {
 	fileSizeItem: vscode.StatusBarItem;
+	configuration: vscode.WorkspaceConfiguration;
+
 	constructor(public context: vscode.ExtensionContext) {
 		this.updateStatusBar = this.updateStatusBar.bind(this);
 		this.getFileSize = this.getFileSize.bind(this);
 		this.getFolderSize = this.getFolderSize.bind(this);
 		this.getWorkspaceSize = this.getWorkspaceSize.bind(this);
+		this.updateConfiguration = this.updateConfiguration.bind(this);
+
+		this.configuration = vscode.workspace.getConfiguration('fsMonitor');
+
+		const alignmentConfig =
+			this.configuration.get<'left' | 'right'>('position') || 'left';
+
+		const alignment = alignmentConfig === 'right' ? 'Right' : 'Left';
 
 		this.fileSizeItem = vscode.window.createStatusBarItem(
-			vscode.StatusBarAlignment.Left,
+			vscode.StatusBarAlignment[alignment],
 			100
 		);
+
+		vscode.workspace.onDidChangeConfiguration(this.updateConfiguration);
 
 		context.subscriptions.push(
 			vscode.window.onDidChangeActiveTextEditor(this.updateStatusBar),
@@ -25,6 +37,27 @@ export default class Extension {
 		this.updateStatusBar();
 
 		console.log('Folder Size Monitor was successfully activated!');
+	}
+
+	async updateConfiguration(e: vscode.ConfigurationChangeEvent) {
+		if (!e.affectsConfiguration('fsMonitor')) {
+			return;
+		}
+
+		this.configuration = vscode.workspace.getConfiguration('fsMonitor');
+
+		this.fileSizeItem.hide();
+		this.fileSizeItem.dispose();
+
+		const alignmentConfig =
+			this.configuration.get<'left' | 'right'>('position') || 'left';
+
+		const alignment = alignmentConfig === 'right' ? 'Right' : 'Left';
+
+		this.fileSizeItem = vscode.window.createStatusBarItem(
+			vscode.StatusBarAlignment[alignment],
+			this.configuration.get<number>('priority')
+		);
 	}
 
 	async updateStatusBar() {
@@ -94,7 +127,7 @@ export default class Extension {
 
 	async getFolderSize(uri: vscode.Uri) {
 		const ignoreNodeModules = vscode.workspace
-			.getConfiguration('foldersizemonitor')
+			.getConfiguration('fsMonitor')
 			.get<boolean>('ignoreNodeModules');
 
 		const ffsConfig: ffs.Options | undefined = ignoreNodeModules

@@ -1,6 +1,6 @@
 {
-	"name": "foldersizemonitor",
-	"displayName": "Folder Size Monitor",
+	"name": "fsmonitor",
+	"displayName": "FS Monitor",
 	"description": "Monitors the size of your current working dir and file in the status bar",
 	"version": "0.0.1",
 	"license": "MIT",
@@ -15,12 +15,29 @@
 	],
 	"contributes": {
 		"configuration": {
-			"title": "Folder Size Monitor",
+			"title": "FS Monitor",
 			"properties": {
-				"foldersizemonitor.ignoreNodeModules": {
+				"fsMonitor.ignoreNodeModules": {
 					"type": "boolean",
 					"default": false,
 					"description": "Ignore the node_modules folder from the total folder size"
+				},
+				"fsMonitor.position": {
+					"type": "string",
+					"enum": [
+						"left",
+						"right"
+					],
+					"default": "left",
+					"enumDescriptions": [
+						"Shows the sizes on the left side of the status bar",
+						"Shows the sizes on the right side of the status bar"
+					]
+				},
+				"fsMonitor.priority": {
+					"type": "number",
+					"default": 100,
+					"markdownDescription": "Change the priority of the sizes on the status bar *higher is closer to your chosen side*"
 				}
 			}
 		}
