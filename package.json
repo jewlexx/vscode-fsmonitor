@@ -15,6 +15,12 @@
 		"onStartupFinished"
 	],
 	"contributes": {
+		"commands": [
+			{
+				"command": "fsMonitor.toggleOnOff",
+				"title": "FS Monitor: Toggle On/Off"
+			}
+		],
 		"configuration": {
 			"title": "FS Monitor",
 			"properties": {
@@ -39,6 +45,11 @@
 					"type": "number",
 					"default": 100,
 					"markdownDescription": "Change the priority on the status bar *higher is always closer to the left*"
+				},
+				"fsMonitor.enabled": {
+					"type": "boolean",
+					"default": true,
+					"description": "Toggles the extension on or off"
 				}
 			}
 		}

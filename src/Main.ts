@@ -5,6 +5,9 @@ import filesize from 'filesize';
 export default class Extension {
 	fileSizeItem: vscode.StatusBarItem;
 	configuration: vscode.WorkspaceConfiguration;
+	oldFileSize = '0 B';
+	oldDirSize = '0 B';
+	enabled: boolean;
 
 	constructor(public context: vscode.ExtensionContext) {
 		// Bindings so anything done in the following functions is done in the context of the extension
@@ -13,21 +16,23 @@ export default class Extension {
 		this.getFolderSize = this.getFolderSize.bind(this);
 		this.getWorkspaceSize = this.getWorkspaceSize.bind(this);
 		this.updateConfiguration = this.updateConfiguration.bind(this);
+		this.toggleOnOff = this.toggleOnOff.bind(this);
 
 		// Sets the configuration to the users configuration
 		this.configuration = vscode.workspace.getConfiguration('fsMonitor');
 
-		// Checks what alignment the user wants the status bar to be in
-		const alignmentConfig =
-			this.configuration.get<'left' | 'right'>('position') || 'left';
-
-		const alignment = alignmentConfig === 'right' ? 'Right' : 'Left';
+		this.enabled =
+			this.configuration.get<boolean>('fsMonitor.enabled') || false;
 
 		// Creates the status bar item and uses the values from config
-		this.fileSizeItem = vscode.window.createStatusBarItem(
-			vscode.StatusBarAlignment[alignment],
-			this.configuration.get<number>('priority')
+		this.createStatusBarItem();
+
+		const toggleOnOffCommand = vscode.commands.registerCommand(
+			'fsMonitor.toggleOnOff',
+			this.toggleOnOff
 		);
+
+		this.fileSizeItem = this.createStatusBarItem();
 
 		// Event listeners
 		const events = [
@@ -36,13 +41,61 @@ export default class Extension {
 			vscode.workspace.onDidSaveTextDocument(this.updateStatusBar),
 		];
 
-		context.subscriptions.push(...events, this.fileSizeItem);
+		context.subscriptions.push(
+			...events,
+			toggleOnOffCommand,
+			this.fileSizeItem
+		);
 		this.fileSizeItem.hide();
 
 		// Initializes the status bar
 		this.updateStatusBar();
 
-		console.log('Folder Size Monitor was successfully activated!');
+		console.log('FS Monitor was successfully activated!');
+	}
+
+	createStatusBarItem() {
+		const alignmentConfig =
+			this.configuration.get<'left' | 'right'>('position') || 'left';
+
+		const alignment = alignmentConfig === 'right' ? 'Right' : 'Left';
+
+		const item = vscode.window.createStatusBarItem(
+			'fsMonitor.fileSizeStatus',
+			vscode.StatusBarAlignment[alignment],
+			this.configuration.get<number>('priority')
+		);
+
+		item.command = 'fsMonitor.toggleOnOff';
+		item.tooltip = 'Toggle FS Monitor On/Off';
+
+		if (!this.enabled) {
+			item.text = 'Disabled';
+			item.backgroundColor = new vscode.ThemeColor(
+				'statusBarItem.errorBackground'
+			);
+			console.log('FS Monitor has been disabled!');
+		}
+
+		return item;
+	}
+
+	async toggleOnOff() {
+		this.configuration.update('fsMonitor.enabled', !this.enabled);
+		if (this.enabled) {
+			this.enabled = false;
+			this.fileSizeItem.text = 'Disabled';
+			this.fileSizeItem.backgroundColor = new vscode.ThemeColor(
+				'statusBarItem.errorBackground'
+			);
+			console.log('FS Monitor has been disabled!');
+		} else {
+			this.enabled = true;
+			this.fileSizeItem.backgroundColor = undefined;
+			this.fileSizeItem.text = 'Enabling...';
+			this.updateStatusBar();
+			console.log('FS Monitor has been enabled!');
+		}
 	}
 
 	async updateConfiguration(e: vscode.ConfigurationChangeEvent) {
@@ -55,28 +108,22 @@ export default class Extension {
 		this.fileSizeItem.hide();
 		this.fileSizeItem.dispose();
 
-		const alignmentConfig =
-			this.configuration.get<'left' | 'right'>('position') || 'left';
-
-		const alignment = alignmentConfig === 'right' ? 'Right' : 'Left';
-
-		this.fileSizeItem = vscode.window.createStatusBarItem(
-			vscode.StatusBarAlignment[alignment],
-			this.configuration.get<number>('priority')
-		);
+		this.fileSizeItem = this.createStatusBarItem();
 
 		return this.updateStatusBar();
 	}
 
 	async updateStatusBar() {
-		const currentFileSize = await this.getFileSize();
-		const currentFolderSize = await this.getWorkspaceSize();
+		if (!this.enabled) return this.fileSizeItem.show();
 
-		console.log(currentFolderSize || 'Folder is undefined');
-		console.log(currentFileSize || 'File is undefined');
+		const currentFileSize = await this.getFileSize();
+
+		const currentFolderSize =
+			currentFileSize !== this.oldFileSize
+				? await this.getWorkspaceSize()
+				: this.oldDirSize;
 
 		if (currentFileSize === undefined && currentFolderSize === undefined) {
-			console.log('Both are undefined');
 			return this.fileSizeItem.hide();
 		} else if (
 			currentFolderSize === undefined &&
@@ -102,9 +149,11 @@ export default class Extension {
 		if (currentFile === undefined) {
 			return undefined;
 		} else if (!currentFile.uri.fsPath.endsWith('.git')) {
-			return filesize(
+			const size = filesize(
 				(await vscode.workspace.fs.stat(currentFile.uri)).size
 			);
+			this.oldFileSize = size;
+			return size;
 		} else {
 			return undefined;
 		}
@@ -120,16 +169,19 @@ export default class Extension {
 				Promise.resolve(0)
 			);
 
-			return filesize(totalSize);
+			const size = filesize(totalSize);
+			this.oldDirSize = size;
+
+			return size;
 		} else {
-			console.log(vscode.workspace.workspaceFolders[0].uri.fsPath);
 			const folderSize = await this.getFolderSize(
 				vscode.workspace.workspaceFolders[0].uri
 			);
 
-			console.log(filesize(folderSize));
+			const size = filesize(folderSize);
+			this.oldDirSize = size;
 
-			return filesize(folderSize);
+			return size;
 		}
 	}
 
