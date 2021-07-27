@@ -4,39 +4,22 @@ import vscode from 'vscode';
 import ffs from 'get-folder-size';
 import filesize from 'filesize';
 
-let testStatusBarItem: vscode.StatusBarItem;
+let statusBarSize: vscode.StatusBarItem;
 
 // this method is called when your extension is activated
 // your extension is activated the very first time the command is executed
 export async function activate(context: vscode.ExtensionContext) {
-	vscode.window.showInformationMessage(
-		'Hello VSCode from FolderSizeMonitor!'
-	);
-
-	if (vscode.workspace.name === undefined) {
-		console.log('Not currently in a workspace');
-	} else {
-		console.log(vscode.workspace.workspaceFolders);
-	}
-
-	testStatusBarItem = vscode.window.createStatusBarItem(
+	statusBarSize = vscode.window.createStatusBarItem(
 		vscode.StatusBarAlignment.Left,
 		100
 	);
 
-	// Figure out the right event so it's not just when you open a new, unopened file
-	const fileChangeEvent =
-		vscode.window.onDidChangeActiveTextEditor(updateStatusBar);
-
-	const fileSaveEvent =
-		vscode.workspace.onDidSaveTextDocument(updateStatusBar);
-
 	context.subscriptions.push(
-		fileChangeEvent,
-		fileSaveEvent,
-		testStatusBarItem
+		vscode.window.onDidChangeActiveTextEditor(updateStatusBar),
+		vscode.workspace.onDidSaveTextDocument(updateStatusBar),
+		statusBarSize
 	);
-	testStatusBarItem.hide();
+	statusBarSize.hide();
 
 	updateStatusBar();
 
@@ -54,24 +37,24 @@ async function updateStatusBar() {
 
 	if (currentFileSize === undefined && currentFolderSize === undefined) {
 		console.log('Both are undefined');
-		return testStatusBarItem.hide();
+		return statusBarSize.hide();
 	} else if (
 		currentFolderSize === undefined &&
 		currentFileSize !== undefined
 	) {
-		testStatusBarItem.text = `$(file) ${currentFileSize}`;
+		statusBarSize.text = `$(file) ${currentFileSize}`;
 	} else if (
 		currentFileSize === undefined &&
 		currentFolderSize !== undefined
 	) {
-		testStatusBarItem.text = `$(file-directory) ${currentFolderSize}`;
+		statusBarSize.text = `$(file-directory) ${currentFolderSize}`;
 	} else {
-		testStatusBarItem.text = `$(file) ${currentFileSize} | $(file-directory) ${
+		statusBarSize.text = `$(file) ${currentFileSize} | $(file-directory) ${
 			currentFolderSize || '0'
 		}`;
 	}
 
-	testStatusBarItem.show();
+	statusBarSize.show();
 }
 
 async function getFileSize(): Promise<string | undefined> {
