@@ -23,8 +23,7 @@ export default class Extension {
 		// Sets the configuration to the users configuration
 		this.configuration = vscode.workspace.getConfiguration(this.idName);
 
-		this.enabled =
-			this.configuration.get<boolean>(`${this.idName}.enabled`) || false;
+		this.enabled = this.configuration.get<boolean>('enabled') || false;
 
 		// Creates the status bar item and uses the values from config
 		this.createStatusBarItem();
@@ -83,7 +82,7 @@ export default class Extension {
 	}
 
 	async toggleOnOff() {
-		this.configuration.update(`${this.idName}.enabled`, !this.enabled);
+		this.configuration.update('enabled', !this.enabled);
 		if (this.enabled) {
 			this.enabled = false;
 			this.fileSizeItem.text = 'Disabled';
@@ -109,6 +108,9 @@ export default class Extension {
 
 		this.fileSizeItem.hide();
 		this.fileSizeItem.dispose();
+
+		// TODO Fix workspace config not properly disabling extension
+		this.enabled = this.configuration.get<boolean>('enabled') || false;
 
 		this.fileSizeItem = this.createStatusBarItem();
 
