@@ -1,71 +1,53 @@
-# FS Monitor README
+# FS Monitor
 
-This is the README for your extension "FS Monitor". After writing up a brief description, we recommend including the following sections.
+FS Monitor, short for Folder Size Monitor, is a simple extension that shows the file and folder sizes on the status bar of your current project in the followig format:
+
+:page_with_curl: size | :file_folder: size
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+Simply shows the current file size and workspace size that you are working on, and
 
-For example if there is an image subfolder under your extension project workspace:
+- Easily disable with a click or a command or even in settings
+  
+- Configure position and priority easily
+  
+- Clean and easy to use
+  
+- Can ignore node_modules from total workspace size
+  
+- More features coming soon!
+  
+
+Wanna see it in action?
 
 \!\[feature X\]\(images/feature-x.png\)
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
-
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+VSCode v1.38 or later
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+Settings:
 
-For example:
-
-This extension contributes the following settings:
-
--   `myExtension.enable`: enable/disable this extension
--   `myExtension.thing`: set to `blah` to do something
+- `fsMonitor.enable`: Toggles the extension on or off
+- `fsMonitor.priority`: Change the priority on the status bar *higher is always closer to the left*
+- `fsMonitor.position`: Shows the sizes on the right/left side of the status bar
+- `fsMonitor.ignoreNodeModules`: Ignore node_modules folder from the total workspace size
 
 ## Known Issues
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+None :)
 
-## Release Notes
+yet...
 
-Users appreciate release notes as you update your extension.
+## Release Notes - See more in the [changelog](changelog.md)
 
 ### 1.0.0
 
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+Initial release of FSMonitor
 
 ---
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
--   [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
--   Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
--   Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
--   Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
--   [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
--   [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
 
 **Enjoy!**
