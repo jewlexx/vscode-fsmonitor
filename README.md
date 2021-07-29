@@ -37,9 +37,7 @@ Settings:
 
 ## Known Issues
 
-None :)
-
-yet...
+* Extremely slow and clunky in large workspaces - Temp Fix: Disable extension before opening these workspaces
 
 ## Release Notes - See more in the [changelog](CHANGELOG.md)
 
