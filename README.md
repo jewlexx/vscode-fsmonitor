@@ -9,15 +9,14 @@ FS Monitor, short for Folder Size Monitor, is a simple extension that shows the 
 Simply shows the current file size and workspace size that you are working on, and
 
 - Easily disable with a click or a command or even in settings
-  
+
 - Configure position and priority easily
-  
+
 - Clean and easy to use
-  
+
 - Can ignore node_modules from total workspace size
-  
+
 - More features coming soon!
-  
 
 Wanna see it in action?
 
@@ -42,7 +41,7 @@ None :)
 
 yet...
 
-## Release Notes - See more in the [changelog](changelog.md)
+## Release Notes - See more in the [changelog](CHANGELOG.md)
 
 ### 1.0.0
 
