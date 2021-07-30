@@ -5,9 +5,9 @@ import filesize from 'filesize';
 export default class Extension {
 	fileSizeItem: vscode.StatusBarItem;
 	configuration: vscode.WorkspaceConfiguration;
+	enabled: boolean;
 	oldFileSize = '0 B';
 	oldDirSize = '0 B';
-	enabled: boolean;
 	idName = 'fsMonitor';
 	displayName = 'FS Monitor';
 
