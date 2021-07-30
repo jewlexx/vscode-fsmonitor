@@ -57,7 +57,7 @@
 	},
 	"main": "./dist/extension.js",
 	"scripts": {
-		"vscode:prepublish": "yarn run package",
+		"vscode:prepublish": "npm i && npm run package",
 		"compile": "webpack",
 		"watch": "webpack --watch",
 		"package": "webpack --mode production --devtool hidden-source-map",
@@ -90,6 +90,6 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/jamesinaxx/FSMonitor.git"
+		"url": "https://github.com/jamesinaxx/FSMonitor"
 	}
 }

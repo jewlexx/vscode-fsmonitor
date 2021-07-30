@@ -12,6 +12,7 @@ jobs:
             - checkout
             - run: node --version
             - run: npm i
-            - run: npx vsce package --no-yarn
+            - run: mkdir out
+            - run: npx vsce package --no-yarn --out "out/"
             - store_artifacts:
-                  path: '*.vsix'
+                  path: '/out'
