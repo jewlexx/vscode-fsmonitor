@@ -2,14 +2,16 @@
 version: 2.1
 
 orbs:
-  node: circleci/node@4.1
+    node: circleci/node@4.1
 
 jobs:
-  build:
-    docker:
-      - image: cimg/node:lts
-    steps:
-      - checkout
-      - run: node --version
-      - run: npm i
-      - run: npx vsce package --no-yarn
+    build:
+        docker:
+            - image: cimg/node:lts
+        steps:
+            - checkout
+            - run: node --version
+            - run: npm i
+            - run: npx vsce package --no-yarn --out "out"
+            - store_artifacts:
+                  path: /tmp/artifacts
