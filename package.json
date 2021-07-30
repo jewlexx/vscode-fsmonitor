@@ -12,8 +12,13 @@
 	},
 	"categories": [
 		"Visualization",
-		"Testing",
 		"Other"
+	],
+	"keywords": [
+		"size",
+		"workspace",
+		"folder",
+		"file"
 	],
 	"activationEvents": [
 		"onStartupFinished"
