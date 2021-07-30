@@ -20,7 +20,7 @@ Simply shows the current file size and workspace size that you are working on, a
 
 Wanna see it in action?
 
-![Screenshot](screenshots/Screenshot.png)
+![Screenshot](images/screenshot.png)
 
 ## Requirements
 
