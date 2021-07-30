@@ -110,7 +110,6 @@ export default class Extension {
 		this.fileSizeItem.hide();
 		this.fileSizeItem.dispose();
 
-		// TODO Fix workspace config not properly disabling extension
 		this.enabled = this.configuration.get<boolean>('enabled') || false;
 
 		this.fileSizeItem = this.createStatusBarItem();
