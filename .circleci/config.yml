@@ -11,6 +11,5 @@ jobs:
     steps:
       - checkout
       - run: node --version
-      - run: npm i -g vsce
       - run: npm i
-      - run: vsce package --no-yarn
+      - run: npx vsce package --no-yarn
