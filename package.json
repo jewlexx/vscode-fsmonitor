@@ -87,5 +87,9 @@
 	"dependencies": {
 		"filesize": "^7.0.0",
 		"get-folder-size": "^3.1.0"
+	},
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/jamesinaxx/FSMonitor.git"
 	}
 }
