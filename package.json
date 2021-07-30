@@ -6,6 +6,7 @@
 	"publisher": "jamesinaxx",
 	"license": "MIT",
 	"preview": true,
+	"icon": "images/icon.png",
 	"engines": {
 		"vscode": "^1.38.0"
 	},
@@ -59,7 +60,7 @@
 	},
 	"main": "./dist/extension.js",
 	"scripts": {
-		"package": "mkdir out -f && vsce package --out \"out/\"",
+		"package": "mkdir out && vsce package --out \"out/\"",
 		"vscode:prepublish": "yarn run build",
 		"build": "webpack --mode production --devtool hidden-source-map",
 		"compile": "webpack",
