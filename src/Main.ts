@@ -124,10 +124,7 @@ export default class Extension {
 
 		const currentFileSize = await this.getFileSize();
 
-		const currentFolderSize =
-			currentFileSize !== this.oldFileSize
-				? await this.getWorkspaceSize()
-				: this.oldDirSize;
+		const currentFolderSize = await this.getWorkspaceSize();
 
 		if (currentFileSize === undefined && currentFolderSize === undefined) {
 			return this.fileSizeItem.hide();
