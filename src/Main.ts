@@ -6,10 +6,11 @@ export default class Extension {
 	fileSizeItem: vscode.StatusBarItem;
 	configuration: vscode.WorkspaceConfiguration;
 	enabled: boolean;
-	oldFileSize = '0 B';
-	oldDirSize = '0 B';
 	idName = 'fsMonitor';
 	displayName = 'FS Monitor';
+	// The following are not currently in use
+	oldFileSize = '0 B';
+	oldDirSize = '0 B';
 
 	constructor(public context: vscode.ExtensionContext) {
 		// Bindings so anything done in the following functions is done in the context of the extension
