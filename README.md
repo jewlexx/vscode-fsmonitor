@@ -39,11 +39,7 @@ Settings:
 
 -   Extremely slow and clunky in large workspaces - Temp Fix: Disable extension before opening these workspaces
 
-## Release Notes - See more in the [changelog](CHANGELOG.md)
-
-### 1.0.0
-
-Initial release of FSMonitor
+## Release Notes - See [CHANGELOG.md](CHANGELOG.md)
 
 ---
 
