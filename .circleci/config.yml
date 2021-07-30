@@ -1,0 +1,16 @@
+# This config is equivalent to both the '.circleci/extended/orb-free.yml' and the base '.circleci/config.yml'
+version: 2.1
+
+orbs:
+  node: circleci/node@4.1
+
+jobs:
+  build:
+    docker:
+      - image: cimg/node:lts
+    steps:
+      - checkout
+      - run: node --version
+      - run: npm i -g vsce
+      - run: npm i
+      - run: vsce package --no-yarn
