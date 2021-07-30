@@ -5,6 +5,7 @@ screenshots/**
 out/**
 node_modules/**
 src/**
+build/**
 .gitignore
 .yarnrc
 vsc-extension-quickstart.md
