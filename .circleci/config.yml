@@ -11,6 +11,7 @@ jobs:
         steps:
             - checkout
             - run: yarn
+            - run: mkdir out
             - run: npx vsce package --out "out/"
             - store_artifacts:
                   path: 'out/'

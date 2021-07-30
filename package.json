@@ -60,7 +60,7 @@
 	},
 	"main": "./dist/extension.js",
 	"scripts": {
-		"package": "mkdir out && vsce package --out \"out/\"",
+		"package": "vsce package --out \"out/\"",
 		"vscode:prepublish": "yarn run build",
 		"build": "webpack --mode production --devtool hidden-source-map",
 		"compile": "webpack",
