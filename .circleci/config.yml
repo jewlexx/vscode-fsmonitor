@@ -10,9 +10,8 @@ jobs:
             - image: cimg/node:lts
         steps:
             - checkout
-            - run: node --version
-            - run: npm i
+            - run: yarn --frozen-lockfile
             - run: mkdir out
-            - run: npx vsce package --no-yarn --out "out/"
+            - run: npx vsce package --out "out/"
             - store_artifacts:
                   path: 'out/'
