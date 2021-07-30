@@ -13,5 +13,6 @@ jobs:
             - run: node --version
             - run: npm i
             - run: npx vsce package --no-yarn --out "out/"
+            - run: mkdir out
             - store_artifacts:
                   path: /out
