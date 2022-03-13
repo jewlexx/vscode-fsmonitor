@@ -80,7 +80,6 @@ export default class Extension {
       this.configuration.get<'left' | 'right'>('position') === 'right' ? 2 : 1;
 
     const item = vscode.window.createStatusBarItem(
-      `${this.idName}.fileSizeStatus`,
       alignment,
       // I have it at 100 because personally it's how I prefer it
       100,
