@@ -2,6 +2,7 @@
   "$schema": "https://json.schemastore.org/swcrc.json",
   "minify": true,
   "jsc": {
+    "target": "es2015",
     "parser": {
       "syntax": "typescript",
       "decorators": true

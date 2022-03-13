@@ -1,4 +1,4 @@
-import vscode, { StatusBarItem } from 'vscode';
+import vscode, { type StatusBarItem } from 'vscode';
 import ffs from 'get-folder-size';
 import filesize from 'filesize';
 
@@ -86,16 +86,11 @@ export default class Extension {
   }
 
   toggleOnOff() {
+    this.enabled = !this.enabled;
     if (this.enabled) {
-      this.enabled = false;
       this.fileSizeItem = null;
-    } else {
-      this.enabled = true;
-      // Trust me on this one Typescript :)
-      this.fileSizeItem = this.createStatusBarItem() as StatusBarItem;
-      this.fileSizeItem.text = 'Enabling...';
-      this.updateStatusBar();
     }
+    this.updateStatusBar();
 
     this.configuration.update('enabled', !this.enabled);
   }
@@ -113,16 +108,13 @@ export default class Extension {
     this.alignment =
       this.configuration.get<'left' | 'right'>('position') === 'right' ? 2 : 1;
 
-    this.fileSizeItem = this.createStatusBarItem();
-
-    return this.updateStatusBar();
+    this.updateStatusBar();
   }
 
   async updateStatusBar() {
     this.fileSizeItem = this.createStatusBarItem();
 
     const currentFileSize = this.getFileSize();
-
     const currentFolderSize = await this.getWorkspaceSize();
 
     if (!currentFileSize && !currentFolderSize) {
@@ -154,30 +146,24 @@ export default class Extension {
     return (this.oldFileSize = filesize(currentFile.getText(range).length));
   }
 
-  async getWorkspaceSize(): Promise<string | undefined> {
+  async getWorkspaceSize() {
     if (!vscode.workspace.workspaceFolders) {
       return;
-    } else if (vscode.workspace.workspaceFolders.length > 1) {
-      const totalSize = await vscode.workspace.workspaceFolders.reduce(
-        async (prev, folder) =>
-          (await prev) + (await this.getFolderSize(folder.uri)),
-        Promise.resolve(0),
-      );
-
-      const size = filesize(totalSize);
-      this.oldDirSize = size;
-
-      return size;
-    } else {
-      const folderSize = await this.getFolderSize(
-        vscode.workspace.workspaceFolders[0].uri,
-      );
-
-      const size = filesize(folderSize);
-      this.oldDirSize = size;
-
-      return size;
     }
+
+    const s = await (() => {
+      if (vscode.workspace.workspaceFolders.length > 1) {
+        return vscode.workspace.workspaceFolders.reduce(
+          async (prev, folder) =>
+            (await prev) + (await this.getFolderSize(folder.uri)),
+          Promise.resolve(0),
+        );
+      } else {
+        return this.getFolderSize(vscode.workspace.workspaceFolders[0].uri);
+      }
+    })();
+
+    return (this.oldDirSize = filesize(s));
   }
 
   getFolderSize(uri: vscode.Uri) {
