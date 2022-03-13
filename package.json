@@ -1,7 +1,7 @@
 {
   "name": "fsmonitor",
   "displayName": "FS Monitor",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Monitors the size of your current workspace and file in the status bar",
   "categories": [
     "Visualization",
