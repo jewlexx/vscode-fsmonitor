@@ -66,13 +66,16 @@ export default class Extension {
 
     // Initializes the status bar
     this.updateStatusBar();
-
-    console.log(`${this.displayName} was successfully activated!`);
   }
 
   createStatusBarItem() {
     if (!this.enabled) {
       return null;
+    }
+
+    if (this.fileSizeItem) {
+      // Dispose of the old one before creating a new one
+      this.fileSizeItem.dispose();
     }
 
     const item = vscode.window.createStatusBarItem(
@@ -106,19 +109,16 @@ export default class Extension {
   }
 
   async updateStatusBar() {
-    if (this.fileSizeItem) {
-      // Dispose of the old one before creating a new one
-      this.fileSizeItem.dispose();
-    }
-
-    this.fileSizeItem = this.createStatusBarItem();
-
     const currentFileSize = this.getFileSize();
     const currentFolderSize = await this.getWorkspaceSize();
 
     if (!currentFileSize && !currentFolderSize) {
       this.fileSizeItem = null;
-    } else if (this.fileSizeItem) {
+      return;
+    }
+    this.fileSizeItem = this.createStatusBarItem();
+
+    if (this.fileSizeItem) {
       const text = [];
       if (currentFileSize) {
         text.push(`$(file) ${currentFileSize}`);
