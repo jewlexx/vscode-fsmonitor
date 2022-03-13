@@ -2,31 +2,31 @@ import vscode, { type StatusBarItem } from 'vscode';
 import filesize from 'filesize';
 
 export default class Extension {
-  _enabled: boolean = this.configuration.get('enabled') || false;
-  _fileSizeItem: StatusBarItem | null = null;
+  private _enabled: boolean = this.configuration.get('enabled') || false;
+  private _fileSizeItem: StatusBarItem | null = null;
 
-  get alignment() {
+  private get alignment() {
     return this.configuration.get('position') === 'right' ? 2 : 1;
   }
 
-  get configuration() {
+  private get configuration() {
     return vscode.workspace.getConfiguration('fsMonitor');
   }
 
-  get enabled() {
+  private get enabled() {
     return this._enabled;
   }
 
-  set enabled(enabled: boolean) {
+  private set enabled(enabled: boolean) {
     this._enabled = enabled;
     this.configuration.update('enabled', enabled);
   }
 
-  get fileSizeItem() {
+  private get fileSizeItem() {
     return this._fileSizeItem;
   }
 
-  set fileSizeItem(item: StatusBarItem | null) {
+  private set fileSizeItem(item: StatusBarItem | null) {
     if (item === null) {
       this._fileSizeItem?.dispose();
     }
@@ -34,7 +34,11 @@ export default class Extension {
     this._fileSizeItem = item;
   }
 
-  constructor(public context: vscode.ExtensionContext) {
+  deactivate() {
+    this.fileSizeItem?.dispose();
+  }
+
+  constructor(private context: vscode.ExtensionContext) {
     // Bindings so anything done in the following functions is done in the context of the extension
     this.updateStatusBar = this.updateStatusBar.bind(this);
     this.getFileSize = this.getFileSize.bind(this);
@@ -51,7 +55,7 @@ export default class Extension {
       ),
       vscode.workspace.onDidChangeConfiguration(this.updateConfiguration),
       vscode.window.onDidChangeActiveTextEditor(this.updateStatusBar),
-      vscode.workspace.onDidSaveTextDocument(this.updateStatusBar),
+      vscode.workspace.onDidChangeTextDocument(this.updateStatusBar),
     ];
 
     context.subscriptions.push(...events);
@@ -60,7 +64,7 @@ export default class Extension {
     this.updateStatusBar();
   }
 
-  createStatusBarItem() {
+  private createStatusBarItem() {
     if (!this.enabled) {
       return null;
     }
@@ -84,13 +88,13 @@ export default class Extension {
     return item;
   }
 
-  toggleOnOff() {
+  private toggleOnOff() {
     this.enabled = !this.enabled;
 
     this.updateStatusBar();
   }
 
-  updateConfiguration(e: vscode.ConfigurationChangeEvent) {
+  private updateConfiguration(e: vscode.ConfigurationChangeEvent) {
     if (!e.affectsConfiguration('fsMonitor')) {
       return;
     }
@@ -100,7 +104,7 @@ export default class Extension {
     this.updateStatusBar();
   }
 
-  async updateStatusBar() {
+  private async updateStatusBar() {
     const currentFileSize = await this.getFileSize();
     const currentFolderSize = await this.getWorkspaceSize();
 
@@ -123,7 +127,7 @@ export default class Extension {
     }
   }
 
-  async getFileSize() {
+  private async getFileSize() {
     const currentFile = vscode.window.activeTextEditor?.document;
     if (!currentFile) {
       return undefined;
@@ -135,7 +139,7 @@ export default class Extension {
     return filesize(file.length);
   }
 
-  async getWorkspaceSize() {
+  private async getWorkspaceSize() {
     if (!vscode.workspace.workspaceFolders) {
       return;
     }
@@ -155,7 +159,7 @@ export default class Extension {
     return filesize(s);
   }
 
-  async getFolderSize(uri: vscode.Uri) {
+  private async getFolderSize(uri: vscode.Uri) {
     const ignoreNodeModules = this.configuration.get('ignoreNodeModules');
 
     const { fs } = vscode.workspace;
