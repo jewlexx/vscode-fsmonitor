@@ -1,105 +1,105 @@
 {
-	"name": "fsmonitor",
-	"displayName": "FS Monitor",
-	"description": "Monitors the size of your current workspace and file in the status bar",
-	"version": "0.0.1",
-	"publisher": "jamesinaxx",
-	"license": "MIT",
-	"preview": true,
-	"icon": "images/icon.png",
-	"engines": {
-		"vscode": "^1.38.0"
-	},
-	"categories": [
-		"Visualization",
-		"Other"
-	],
-	"keywords": [
-		"size",
-		"workspace",
-		"folder",
-		"file"
-	],
-	"activationEvents": [
-		"onStartupFinished"
-	],
-	"contributes": {
-		"commands": [
-			{
-				"command": "fsMonitor.toggleOnOff",
-				"title": "FS Monitor: Toggle On/Off"
-			}
-		],
-		"configuration": {
-			"title": "FS Monitor",
-			"properties": {
-				"fsMonitor.ignoreNodeModules": {
-					"type": "boolean",
-					"default": false,
-					"description": "Ignore the node_modules folder from the total folder size"
-				},
-				"fsMonitor.position": {
-					"type": "string",
-					"enum": [
-						"left",
-						"right"
-					],
-					"default": "left",
-					"enumDescriptions": [
-						"Shows the sizes on the left side of the status bar",
-						"Shows the sizes on the right side of the status bar"
-					]
-				},
-				"fsMonitor.priority": {
-					"type": "number",
-					"default": 100,
-					"markdownDescription": "Change the priority on the status bar *higher is always closer to the left*"
-				},
-				"fsMonitor.enabled": {
-					"type": "boolean",
-					"default": true,
-					"description": "Toggles the extension on or off"
-				}
-			}
-		}
-	},
-	"main": "./dist/extension.js",
-	"scripts": {
-		"package": "node build/index.js",
-		"vscode:prepublish": "yarn run build",
-		"build": "webpack --mode production --devtool hidden-source-map",
-		"compile": "webpack",
-		"watch": "webpack --watch",
-		"test-compile": "tsc -p ./",
-		"test-watch": "tsc -watch -p ./",
-		"pretest": "yarn run test-compile && yarn run lint",
-		"lint": "eslint src --ext ts",
-		"test": "node ./out/test/runTest.js"
-	},
-	"devDependencies": {
-		"@types/get-folder-size": "^3.0.1",
-		"@types/glob": "^7.1.3",
-		"@types/mocha": "^9.0.0",
-		"@types/node": "14.x",
-		"@types/vscode": "^1.38.0",
-		"@typescript-eslint/eslint-plugin": "^4.26.0",
-		"@typescript-eslint/parser": "^4.26.0",
-		"eslint": "^7.27.0",
-		"glob": "^7.1.7",
-		"mocha": "^9.0.3",
-		"ts-loader": "^9.2.4",
-		"typescript": "^4.3.2",
-		"vsce": "^1.96.1",
-		"vscode-test": "^1.5.2",
-		"webpack": "^5.47.1",
-		"webpack-cli": "^4.7.2"
-	},
-	"dependencies": {
-		"filesize": "^7.0.0",
-		"get-folder-size": "^3.1.0"
-	},
-	"repository": {
-		"type": "git",
-		"url": "https://github.com/jamesinaxx/FSMonitor"
-	}
+  "name": "fsmonitor",
+  "displayName": "FS Monitor",
+  "version": "0.0.1",
+  "description": "Monitors the size of your current workspace and file in the status bar",
+  "categories": [
+    "Visualization",
+    "Other"
+  ],
+  "keywords": [
+    "size",
+    "workspace",
+    "folder",
+    "file"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jamesinaxx/FSMonitor"
+  },
+  "license": "MIT",
+  "publisher": "jamesinaxx",
+  "main": "./dist/extension.js",
+  "scripts": {
+    "build": "webpack --mode production --devtool hidden-source-map",
+    "compile": "webpack",
+    "lint": "eslint src --ext ts",
+    "package": "node build/index.js",
+    "pretest": "yarn run test-compile && yarn run lint",
+    "test": "node ./out/test/runTest.js",
+    "test-compile": "tsc -p ./",
+    "test-watch": "tsc -watch -p ./",
+    "vscode:prepublish": "yarn run build",
+    "watch": "webpack --watch"
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "fsMonitor.toggleOnOff",
+        "title": "FS Monitor: Toggle On/Off"
+      }
+    ],
+    "configuration": {
+      "title": "FS Monitor",
+      "properties": {
+        "fsMonitor.ignoreNodeModules": {
+          "type": "boolean",
+          "default": false,
+          "description": "Ignore the node_modules folder from the total folder size"
+        },
+        "fsMonitor.position": {
+          "type": "string",
+          "enum": [
+            "left",
+            "right"
+          ],
+          "default": "left",
+          "enumDescriptions": [
+            "Shows the sizes on the left side of the status bar",
+            "Shows the sizes on the right side of the status bar"
+          ]
+        },
+        "fsMonitor.priority": {
+          "type": "number",
+          "default": 100,
+          "markdownDescription": "Change the priority on the status bar *higher is always closer to the left*"
+        },
+        "fsMonitor.enabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "Toggles the extension on or off"
+        }
+      }
+    }
+  },
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "dependencies": {
+    "filesize": "8.0.7",
+    "get-folder-size": "3.1.0"
+  },
+  "devDependencies": {
+    "@types/get-folder-size": "3.0.1",
+    "@types/glob": "7.2.0",
+    "@types/mocha": "9.1.0",
+    "@types/node": "17.0.21",
+    "@types/vscode": "1.65.0",
+    "@typescript-eslint/eslint-plugin": "5.14.0",
+    "@typescript-eslint/parser": "5.14.0",
+    "eslint": "8.11.0",
+    "glob": "7.2.0",
+    "mocha": "9.2.2",
+    "ts-loader": "9.2.8",
+    "typescript": "4.6.2",
+    "vsce": "2.7.0",
+    "vscode-test": "1.6.1",
+    "webpack": "5.70.0",
+    "webpack-cli": "4.9.2"
+  },
+  "engines": {
+    "vscode": "1.38.0"
+  },
+  "icon": "images/icon.png",
+  "preview": true
 }
