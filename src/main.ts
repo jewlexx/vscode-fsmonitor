@@ -1,5 +1,4 @@
 import vscode, { type StatusBarItem } from 'vscode';
-import ffs from 'get-folder-size';
 import filesize from 'filesize';
 
 export default class Extension {
@@ -158,13 +157,26 @@ export default class Extension {
     return filesize(s);
   }
 
-  getFolderSize(uri: vscode.Uri) {
+  async getFolderSize(uri: vscode.Uri) {
     const ignoreNodeModules = this.configuration.get('ignoreNodeModules');
 
-    const ffsConfig: ffs.Options | undefined = ignoreNodeModules
-      ? { ignore: /node_modules/g }
-      : undefined;
+    const { fs } = vscode.workspace;
 
-    return ffs.loose(uri.fsPath, ffsConfig);
+    const ignore = ignoreNodeModules ? /node_modules/g.test : () => true;
+
+    const dir = (await fs.readDirectory(uri)).filter(([name]) => !ignore(name));
+
+    const p: Promise<number>[] = dir.map(async ([name, type]) => {
+      if (vscode.FileType[type]) {
+        return await this.getFolderSize(vscode.Uri.joinPath(uri, name));
+      }
+
+      return (await fs.readFile(vscode.Uri.joinPath(uri, name))).length;
+    });
+
+    return p.reduce(
+      (prev, curr) => prev.then((v) => curr.then((c) => v + c)),
+      Promise.resolve(0),
+    );
   }
 }
