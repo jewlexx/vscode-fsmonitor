@@ -35,10 +35,6 @@ export default class Extension {
     this._fileSizeItem = item;
   }
 
-  // The following are not currently in use
-  oldFileSize = '0 B';
-  oldDirSize = '0 B';
-
   displayName = 'FS Monitor';
   idName = 'fsMonitor';
 
@@ -142,7 +138,7 @@ export default class Extension {
       new vscode.Position(currentFile.lineCount - 1, 0),
     );
 
-    return (this.oldFileSize = filesize(currentFile.getText(range).length));
+    return filesize(currentFile.getText(range).length);
   }
 
   async getWorkspaceSize() {
@@ -162,7 +158,7 @@ export default class Extension {
       }
     })();
 
-    return (this.oldDirSize = filesize(s));
+    return filesize(s);
   }
 
   getFolderSize(uri: vscode.Uri) {
