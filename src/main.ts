@@ -3,24 +3,28 @@ import ffs from 'get-folder-size';
 import filesize from 'filesize';
 
 export default class Extension {
-  displayName = 'FS Monitor';
-  idName = 'fsMonitor';
-  configuration = vscode.workspace.getConfiguration(this.idName);
-  alignment = this.configuration.get('position') === 'right' ? 2 : 1;
-
   _enabled: boolean = this.configuration.get('enabled') || false;
   _fileSizeItem: StatusBarItem | null = null;
+
+  alignment = this.configuration.get('position') === 'right' ? 2 : 1;
+
+  get configuration() {
+    return vscode.workspace.getConfiguration(this.idName);
+  }
 
   get enabled() {
     return this._enabled;
   }
+
   set enabled(enabled: boolean) {
     this._enabled = enabled;
     this.configuration.update('enabled', enabled);
   }
+
   get fileSizeItem() {
     return this._fileSizeItem;
   }
+
   set fileSizeItem(item: StatusBarItem | null) {
     if (item === null) {
       this._fileSizeItem?.dispose();
@@ -32,6 +36,9 @@ export default class Extension {
   // The following are not currently in use
   oldFileSize = '0 B';
   oldDirSize = '0 B';
+
+  displayName = 'FS Monitor';
+  idName = 'fsMonitor';
 
   constructor(public context: vscode.ExtensionContext) {
     // Bindings so anything done in the following functions is done in the context of the extension
@@ -95,8 +102,6 @@ export default class Extension {
     if (!e.affectsConfiguration(this.idName)) {
       return;
     }
-
-    this.configuration = vscode.workspace.getConfiguration(this.idName);
 
     this.fileSizeItem = null;
 
