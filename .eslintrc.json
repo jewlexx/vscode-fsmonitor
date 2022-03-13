@@ -13,7 +13,9 @@
     "eqeqeq": "warn",
     "no-throw-literal": "warn",
     "semi": "off",
-    "require-await": "warn"
+    "require-await": "warn",
+    "no-lonely-if": "warn",
+    "no-lone-blocks": "warn"
   },
   "ignorePatterns": ["out", "dist", "**/*.d.ts"]
 }
