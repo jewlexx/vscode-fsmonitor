@@ -75,12 +75,8 @@ export default class Extension {
       return null;
     }
 
-    // Gets the alignment and defaults to left if it is undefined
-    const alignment: 1 | 2 =
-      this.configuration.get<'left' | 'right'>('position') === 'right' ? 2 : 1;
-
     const item = vscode.window.createStatusBarItem(
-      alignment,
+      this.alignment,
       // I have it at 100 because personally it's how I prefer it
       100,
     );
