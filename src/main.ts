@@ -6,7 +6,9 @@ export default class Extension {
   _enabled: boolean = this.configuration.get('enabled') || false;
   _fileSizeItem: StatusBarItem | null = null;
 
-  alignment = this.configuration.get('position') === 'right' ? 2 : 1;
+  get alignment() {
+    return this.configuration.get('position') === 'right' ? 2 : 1;
+  }
 
   get configuration() {
     return vscode.workspace.getConfiguration(this.idName);
@@ -103,16 +105,17 @@ export default class Extension {
       return;
     }
 
-    this.fileSizeItem = null;
-
-    this.enabled = this.configuration.get<boolean>('enabled') || false;
-    this.alignment =
-      this.configuration.get<'left' | 'right'>('position') === 'right' ? 2 : 1;
+    this._enabled = this.configuration.get<boolean>('enabled') || false;
 
     this.updateStatusBar();
   }
 
   async updateStatusBar() {
+    if (this.fileSizeItem) {
+      // Dispose of the old one before creating a new one
+      this.fileSizeItem.dispose();
+    }
+
     this.fileSizeItem = this.createStatusBarItem();
 
     const currentFileSize = this.getFileSize();
