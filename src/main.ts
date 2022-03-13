@@ -87,12 +87,8 @@ export default class Extension {
 
   toggleOnOff() {
     this.enabled = !this.enabled;
-    if (this.enabled) {
-      this.fileSizeItem = null;
-    }
-    this.updateStatusBar();
 
-    this.configuration.update('enabled', !this.enabled);
+    this.updateStatusBar();
   }
 
   updateConfiguration(e: vscode.ConfigurationChangeEvent) {
