@@ -11,7 +11,7 @@ export default class Extension {
   }
 
   get configuration() {
-    return vscode.workspace.getConfiguration(this.idName);
+    return vscode.workspace.getConfiguration('fsMonitor');
   }
 
   get enabled() {
@@ -35,9 +35,6 @@ export default class Extension {
     this._fileSizeItem = item;
   }
 
-  displayName = 'FS Monitor';
-  idName = 'fsMonitor';
-
   constructor(public context: vscode.ExtensionContext) {
     // Bindings so anything done in the following functions is done in the context of the extension
     this.updateStatusBar = this.updateStatusBar.bind(this);
@@ -50,7 +47,7 @@ export default class Extension {
     // Event listeners and commands
     const events = [
       vscode.commands.registerCommand(
-        `${this.idName}.toggleOnOff`,
+        'fsMonitor.toggleOnOff',
         this.toggleOnOff,
       ),
       vscode.workspace.onDidChangeConfiguration(this.updateConfiguration),
@@ -80,8 +77,8 @@ export default class Extension {
       100,
     );
 
-    item.command = `${this.idName}.toggleOnOff`;
-    item.tooltip = `Toggle ${this.displayName} On/Off`;
+    item.command = 'fsMonitor.toggleOnOff';
+    item.tooltip = 'Toggle FS Monitor On/Off';
 
     this.context.subscriptions.push(item);
 
@@ -95,7 +92,7 @@ export default class Extension {
   }
 
   updateConfiguration(e: vscode.ConfigurationChangeEvent) {
-    if (!e.affectsConfiguration(this.idName)) {
+    if (!e.affectsConfiguration('fsMonitor')) {
       return;
     }
 
