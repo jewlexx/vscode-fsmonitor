@@ -101,7 +101,7 @@ export default class Extension {
   }
 
   async updateStatusBar() {
-    const currentFileSize = this.getFileSize();
+    const currentFileSize = await this.getFileSize();
     const currentFolderSize = await this.getWorkspaceSize();
 
     if (!currentFileSize && !currentFolderSize) {
@@ -123,18 +123,16 @@ export default class Extension {
     }
   }
 
-  getFileSize() {
+  async getFileSize() {
     const currentFile = vscode.window.activeTextEditor?.document;
     if (!currentFile) {
       return undefined;
     }
 
-    const range = new vscode.Range(
-      new vscode.Position(0, 0),
-      new vscode.Position(currentFile.lineCount - 1, 0),
-    );
+    const { fs } = vscode.workspace;
+    const file = await fs.readFile(currentFile.uri);
 
-    return filesize(currentFile.getText(range).length);
+    return filesize(file.length);
   }
 
   async getWorkspaceSize() {
