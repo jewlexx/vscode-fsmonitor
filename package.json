@@ -47,6 +47,11 @@
           "default": false,
           "description": "Ignore the node_modules folder from the total folder size"
         },
+        "fsMonitor.folderSizeEnabled": {
+          "type": "boolean",
+          "default": true,
+          "description": "[DEBUG ONLY] Enable the folder size. **DO NOT ENABLE THIS AS CURRENTLY IT READS THE ENTIRE DIR EVERY SINGLE TIME A FILE IS CHANGED WHICH IS VERY INEFFICIENT**"
+        },
         "fsMonitor.position": {
           "type": "string",
           "enum": [

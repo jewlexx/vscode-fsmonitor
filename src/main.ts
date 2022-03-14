@@ -13,6 +13,10 @@ export default class Extension {
     return vscode.workspace.getConfiguration('fsMonitor');
   }
 
+  private get folderSizeEnabled(): boolean {
+    return this.configuration.get<boolean>('folderSizeEnabled') ?? false;
+  }
+
   private get enabled() {
     return this._enabled;
   }
@@ -142,7 +146,7 @@ export default class Extension {
   }
 
   private async getWorkspaceSize() {
-    if (!vscode.workspace.workspaceFolders) {
+    if (!vscode.workspace.workspaceFolders || !this.folderSizeEnabled) {
       return;
     }
 
@@ -157,6 +161,8 @@ export default class Extension {
         return this.getFolderSize(vscode.workspace.workspaceFolders[0].uri);
       }
     })();
+
+    console.debug('Read File Size');
 
     return filesize(s);
   }
@@ -186,6 +192,8 @@ export default class Extension {
 
       return (await fs.readFile(vscode.Uri.joinPath(uri, name))).length;
     });
+
+    console.debug('Read Dir Size');
 
     return p.reduce(
       (prev, curr) => prev.then((v) => curr.then((c) => v + c)),
