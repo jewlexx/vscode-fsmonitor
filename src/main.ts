@@ -1,4 +1,4 @@
-import vscode, { type StatusBarItem } from 'vscode';
+import vscode, { type TextDocument, type StatusBarItem } from 'vscode';
 import filesize from 'filesize';
 
 export default class Extension {
@@ -38,6 +38,9 @@ export default class Extension {
     this._fileSizeItem = item;
   }
 
+  oldFileSize = 0;
+  oldFolderSize = 0;
+
   deactivate() {
     this.fileSizeItem?.dispose();
   }
@@ -55,14 +58,19 @@ export default class Extension {
     const events = [
       vscode.commands.registerCommand('fsMonitor.toggle', this.toggle),
       vscode.workspace.onDidChangeConfiguration(this.updateConfiguration),
-      vscode.window.onDidChangeActiveTextEditor(this.updateStatusBar),
-      vscode.workspace.onDidChangeTextDocument(this.updateStatusBar),
+      vscode.window.onDidChangeActiveTextEditor((e) => {
+        this.updateStatusBar(e?.document);
+      }),
+      vscode.workspace.onWillSaveTextDocument((e) => {
+        console.log('Will save text doc');
+        this.updateStatusBar(e.document);
+      }),
     ];
 
     context.subscriptions.push(...events);
 
     // Initializes the status bar
-    this.updateStatusBar();
+    // this.updateStatusBar();
   }
 
   private createStatusBarItem() {
@@ -71,8 +79,7 @@ export default class Extension {
     }
 
     if (this.fileSizeItem) {
-      // Dispose of the old one before creating a new one
-      this.fileSizeItem.dispose();
+      return this.fileSizeItem;
     }
 
     const item = vscode.window.createStatusBarItem(
@@ -94,7 +101,9 @@ export default class Extension {
   private toggle() {
     this.enabled = !this.enabled;
 
-    this.updateStatusBar();
+    console.debug('Toggled');
+
+    this.updateStatusBar(vscode.window.activeTextEditor?.document);
   }
 
   private updateConfiguration(e: vscode.ConfigurationChangeEvent) {
@@ -104,21 +113,22 @@ export default class Extension {
 
     this._enabled = this.configuration.get<boolean>('enabled') || false;
 
-    this.updateStatusBar();
+    this.updateStatusBar(vscode.window.activeTextEditor?.document);
   }
 
-  private async updateStatusBar() {
-    const currentFileSize = await this.getFileSize();
-    const currentFolderSize = await this.getWorkspaceSize();
+  private /* async */ updateStatusBar(doc: TextDocument | undefined) {
+    const currentFileSize = this.getFileSize(doc);
+    const currentFolderSize = undefined; /* await this.getWorkspaceSize() */
 
     if (!currentFileSize && !currentFolderSize) {
       this.fileSizeItem = null;
       return;
     }
-    this.fileSizeItem = this.createStatusBarItem();
 
-    if (this.fileSizeItem) {
-      const text = [];
+    const newItem = this.createStatusBarItem();
+
+    if (newItem) {
+      const text: string[] = [];
       if (currentFileSize) {
         text.push(`$(file) ${currentFileSize}`);
       }
@@ -126,18 +136,25 @@ export default class Extension {
         text.push(`$(folder) ${currentFolderSize ?? 0}`);
       }
 
-      this.fileSizeItem.text = text.join(' | ');
+      this.fileSizeItem = {
+        ...newItem,
+        text: text.join(' | '),
+      };
     }
   }
 
-  private async getFileSize() {
-    const currentFile = vscode.window.activeTextEditor?.document;
-    if (!currentFile) {
+  private getFileSize(doc: TextDocument | undefined) {
+    if (!doc) {
       return undefined;
     }
 
-    const { fs } = vscode.workspace;
-    const file = await fs.readFile(currentFile.uri);
+    const startPos = new vscode.Position(0, 0);
+    const endPos = new vscode.Position(doc.lineCount - 1, 0);
+    const range = new vscode.Range(startPos, endPos);
+
+    const file = doc.getText(range);
+
+    console.debug('Read File Size');
 
     return filesize(file.length);
   }
@@ -158,8 +175,6 @@ export default class Extension {
         return this.getFolderSize(vscode.workspace.workspaceFolders[0].uri);
       }
     })();
-
-    console.debug('Read File Size');
 
     return filesize(s);
   }
@@ -189,8 +204,6 @@ export default class Extension {
 
       return (await fs.readFile(vscode.Uri.joinPath(uri, name))).length;
     });
-
-    console.debug('Read Dir Size');
 
     return p.reduce(
       (prev, curr) => prev.then((v) => curr.then((c) => v + c)),
