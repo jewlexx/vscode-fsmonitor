@@ -49,7 +49,7 @@
         },
         "fsMonitor.folderSizeEnabled": {
           "type": "boolean",
-          "default": true,
+          "default": false,
           "description": "[DEBUG ONLY] Enable the folder size. **DO NOT ENABLE THIS AS CURRENTLY IT READS THE ENTIRE DIR EVERY SINGLE TIME A FILE IS CHANGED WHICH IS VERY INEFFICIENT**"
         },
         "fsMonitor.position": {
