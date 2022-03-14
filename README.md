@@ -26,15 +26,6 @@ Wanna see it in action?
 
 VSCode v1.38 or later
 
-## Extension Settings
-
-Settings:
-
-- `fsMonitor.enable`: Toggles the extension on or off
-- `fsMonitor.priority`: Change the priority on the status bar _higher is always closer to the left_
-- `fsMonitor.position`: Shows the sizes on the right/left side of the status bar
-- `fsMonitor.ignoreNodeModules`: Ignore node_modules folder from the total workspace size
-
 ## Known Issues
 
 - Extremely slow and clunky in large workspaces - Temp Fix: Disable extension before opening these workspaces
@@ -43,4 +34,4 @@ Settings:
 
 ---
 
-**Developed with ❤️ by jewlexx**
+**Developed with ❤️ by Juliette**

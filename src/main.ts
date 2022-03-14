@@ -49,14 +49,11 @@ export default class Extension {
     this.getFolderSize = this.getFolderSize.bind(this);
     this.getWorkspaceSize = this.getWorkspaceSize.bind(this);
     this.updateConfiguration = this.updateConfiguration.bind(this);
-    this.toggleOnOff = this.toggleOnOff.bind(this);
+    this.toggle = this.toggle.bind(this);
 
     // Event listeners and commands
     const events = [
-      vscode.commands.registerCommand(
-        'fsMonitor.toggleOnOff',
-        this.toggleOnOff,
-      ),
+      vscode.commands.registerCommand('fsMonitor.toggle', this.toggle),
       vscode.workspace.onDidChangeConfiguration(this.updateConfiguration),
       vscode.window.onDidChangeActiveTextEditor(this.updateStatusBar),
       vscode.workspace.onDidChangeTextDocument(this.updateStatusBar),
@@ -84,7 +81,7 @@ export default class Extension {
       100,
     );
 
-    item.command = 'fsMonitor.toggleOnOff';
+    item.command = 'fsMonitor.toggle';
     item.tooltip = 'Toggle FS Monitor On/Off';
 
     this.context.subscriptions.push(item);
@@ -94,7 +91,7 @@ export default class Extension {
     return item;
   }
 
-  private toggleOnOff() {
+  private toggle() {
     this.enabled = !this.enabled;
 
     this.updateStatusBar();
