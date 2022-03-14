@@ -85,6 +85,8 @@ export default class Extension {
 
     this.context.subscriptions.push(item);
 
+    item.show();
+
     return item;
   }
 
@@ -164,13 +166,22 @@ export default class Extension {
 
     const { fs } = vscode.workspace;
 
-    const ignore = ignoreNodeModules ? /node_modules/g.test : () => true;
+    const ignore = (str: string) => {
+      if (ignoreNodeModules) {
+        return /node_modules/g.test(str);
+      }
+      return true;
+    };
 
-    const dir = (await fs.readDirectory(uri)).filter(([name]) => !ignore(name));
+    const dir = (await fs.readDirectory(uri)).filter(
+      ([name]) => !ignore(name ?? ''),
+    );
 
     const p: Promise<number>[] = dir.map(async ([name, type]) => {
-      if (vscode.FileType[type]) {
-        return await this.getFolderSize(vscode.Uri.joinPath(uri, name));
+      if (type === vscode.FileType.Directory) {
+        return await this.getFolderSize(vscode.Uri.joinPath(uri, name)).catch(
+          () => 0,
+        );
       }
 
       return (await fs.readFile(vscode.Uri.joinPath(uri, name))).length;
